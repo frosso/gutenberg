@@ -1003,6 +1003,39 @@ class WP_Theme_JSON {
 				);
 			}
 
+			// Some properties can be styled by the user
+			// and will end up having preset classes attached to the block
+			// such as `.has-text-color .has-red-color`, etc.
+			//
+			// In those cases, we want the user preferences
+			// to overrule the theme's, hence this negations.
+			foreach ( $declarations as $index => $property ) {
+				if ( 'color' === $property['name'] ) {
+					$block_rules .= self::to_ruleset(
+						$selector . ':not([class*=has-text-color])',
+						array( $property )
+					);
+					unset( $declarations[ $index ] );
+				}
+
+				if ( in_array( $property['name'], array( 'background', 'background-color' ) ) ) {
+					$block_rules .= self::to_ruleset(
+						$selector . ':not([class*=has-background-color])',
+						array( $property )
+					);
+					unset( $declarations[ $index ] );
+				}
+
+				if ( 'font-size' === $property['name'] ) {
+					$block_rules .= self::to_ruleset(
+						$selector . ':not([class*=-font-size])',
+						array( $property )
+					);
+					unset( $declarations[ $index ] );
+				}
+			}
+
+			// Attach the style rules left in one single ruleset.
 			$block_rules .= self::to_ruleset( $selector, $declarations );
 
 			// Attach the rulesets for the classes.
