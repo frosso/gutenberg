@@ -1026,6 +1026,14 @@ class WP_Theme_JSON {
 					unset( $declarations[ $index ] );
 				}
 
+				if ( '--wp--style--color--link' === $property['name'] ) {
+					$block_rules .= self::to_ruleset(
+						$selector . ':not([class*=has-link-color])',
+						array( $property )
+					);
+					unset( $declarations[ $index ] );
+				}
+
 				if ( 'font-size' === $property['name'] ) {
 					$block_rules .= self::to_ruleset(
 						$selector . ':not([class*=-font-size])',
